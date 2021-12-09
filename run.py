@@ -45,6 +45,7 @@ for index,possible_label in enumerate(possible_label):
 train_data['Emotion'] = train_data.Emotion.replace(label_dict)
 dev_data["Emotion"]= dev_data.Emotion.replace(label_dict)
 test_data["Emotion"]=test_data.Emotion.replace(label_dict)
+
 # print(train_data.Emotion.values)
 # processed_data_train1=[]
 # processing data
@@ -124,8 +125,10 @@ dataloader_dev=DataLoader(dataset_dev,
                           **kwargs)
 dataloader_test=DataLoader(dataset_test,
                           sampler=SequentialSampler(dataset_test),
-                          batch_size=len(test_data),
+                          batch_size=8,
                           **kwargs)
+# print("dataset train",(len(list(dataloader_train))))
+# print("dataset",(len(list(dataloader_test))))
 
 
 optimizer=AdamW(model.parameters(),
@@ -153,20 +156,26 @@ def evaluate(dataloader_val):
         with torch.no_grad():
             outputs=model(**inputs)
 
+        # print(outputs)
         loss=outputs[0]
         logits=outputs[1]
         loss_val_total+=loss.item()
 
         logits=logits.detach().cpu().numpy()
+        # print(logits)
+        # print("amx",np.argmax(logits,axis=1))
         label_ids=inputs["labels"].cpu().numpy()
+        # print(label_ids)
 
         predictions.append(logits)
         true_vals.append(label_ids)
         loss_val_avg=loss_val_total/len(dataloader_val)
-        predictions=np.concatenate(predictions,axis=0)
-        true_vals=np.concatenate(true_vals,axis=0)
+        # predictions=np.concatenate(predictions,axis=0)
+        # true_vals=np.concatenate(true_vals,axis=0)
+        print("ss"
+              )
 
-        return loss_val_avg,predictions,true_vals
+    return loss_val_avg,predictions,true_vals
 
 
 # Train
@@ -216,6 +225,10 @@ model.to(device)
 model.load_state_dict(torch.load('./finetuned_epoch5.model', map_location=torch.device('cuda')))
 
 _, predictions, true_vals = evaluate(dataloader_test)
+# print("output",(predictions))
+print(label_dict)
+print(test_data["Emotion"][0:10])
+print(test_data["Utterance"][0:10])
 accuracy_per_class(predictions, true_vals)
 # print(len(encoded_inputs_train["attention_mask"]))
 

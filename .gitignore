@@ -1,4 +1,13 @@
+
 MELD/
 abc/
-finetuned*
+*.pt
 __pycache__/
+model/
+wandb/
+leslie_code/
+baselines/
+*.py
+*.model
+*.pkl
+.ipynb_checkpoints/
